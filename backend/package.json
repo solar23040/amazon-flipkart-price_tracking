@@ -1,0 +1,38 @@
+{
+  "name": "price-history-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.build.json && cp src/db/schema.sql dist/db/schema.sql",
+    "start": "sh ../scripts/check-mount.sh && node dist/index.js",
+    "backup": "sh ../scripts/backup-db.sh",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5",
+    "@types/node-notifier": "^8.0.5",
+    "@types/nodemailer": "^8.0.2",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "cheerio": "^1.2.0",
+    "express": "^5.3.0",
+    "node-cron": "^4.6.0",
+    "node-notifier": "^11.0.0",
+    "nodemailer": "^10.1.2",
+    "pino": "^10.4.0",
+    "zod": "^4.6.7"
+  }
+}

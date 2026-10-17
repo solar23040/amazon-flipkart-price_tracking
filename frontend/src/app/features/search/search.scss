@@ -1,0 +1,142 @@
+.pane {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.search-card {
+  padding: 1.4rem 1.5rem 1rem;
+  border-radius: var(--mat-sys-corner-large, 16px);
+  margin-bottom: 1.25rem;
+
+  .query-field {
+    width: 100%;
+  }
+
+  .chips {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+
+    .chip {
+      border: 1px solid var(--mat-sys-outline-variant, #e2e2e6);
+      border-radius: 999px;
+      color: var(--mat-sys-on-surface-variant, #44474e);
+      transition:
+        background-color 160ms ease,
+        color 160ms ease,
+        border-color 160ms ease;
+
+      &.active {
+        background: color-mix(in srgb, var(--mat-sys-primary) 14%, transparent);
+        border-color: color-mix(in srgb, var(--mat-sys-primary) 45%, transparent);
+        color: var(--mat-sys-primary);
+        font-weight: 650;
+      }
+    }
+  }
+
+  .hint {
+    margin: 0.75rem 0 0.25rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+}
+
+.empty {
+  margin-bottom: 1.25rem;
+
+  h2 {
+    font-size: 1.05rem;
+  }
+}
+
+.site-group {
+  margin-bottom: 1.5rem;
+
+  .group-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+
+    .count {
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+  }
+
+  .group-note {
+    margin: 0 0 0.5rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    max-width: 62ch;
+  }
+}
+
+.result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.result-card {
+  border-radius: var(--mat-sys-corner-medium, 12px);
+
+  .result-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .result-title {
+      flex: 1 1 auto;
+      min-width: 0;
+      color: var(--mat-sys-on-surface, #1a1c1e);
+      text-decoration: none;
+      font-weight: 550;
+      line-height: 1.4;
+
+      &:hover {
+        color: var(--mat-sys-primary);
+        text-decoration: underline;
+      }
+    }
+
+    .result-price {
+      flex: 0 0 auto;
+      font-size: 1.02rem;
+    }
+
+    .stock.out {
+      flex: 0 0 auto;
+      font-size: 0.78rem;
+      color: var(--mat-sys-error, #ba1a1a);
+    }
+
+    .track-button {
+      flex: 0 0 auto;
+    }
+  }
+}
+
+@media (max-width: 520px) {
+  .result-card .result-row {
+    flex-wrap: wrap;
+
+    .result-title {
+      flex-basis: 100%;
+      min-height: 44px;
+    }
+
+    .track-button {
+      margin-left: auto;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-card .chips .chip {
+    transition: none;
+  }
+}

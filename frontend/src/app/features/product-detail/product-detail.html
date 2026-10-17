@@ -1,0 +1,162 @@
+@if (notFound()) {
+  <mat-card appearance="outlined" class="notice-card rise-in">
+    <h1>Product not found</h1>
+    <p>This product does not exist (or was removed).</p>
+    <a matButton="filled" routerLink="/">Back to dashboard</a>
+  </mat-card>
+} @else if (error(); as message) {
+  <mat-card appearance="outlined" class="notice-card error rise-in">
+    <p class="error-text">{{ message }}</p>
+    <button matButton (click)="load()">Retry</button>
+  </mat-card>
+} @else if (product(); as p) {
+  <section class="page-head">
+    <div>
+      <h1>{{ p.name }}</h1>
+      <p class="subtitle muted">Tracking since {{ p.created_at | timeAgo }}</p>
+    </div>
+    <div class="actions">
+      <button matButton (click)="load()">Refresh</button>
+      <a matButton [routerLink]="['/compare']" [queryParams]="{ productId: p.id }">Compare</a>
+    </div>
+  </section>
+
+  @if (notice(); as message) {
+    <mat-card appearance="outlined" class="status-line rise-in">{{ message }}</mat-card>
+  }
+
+  <mat-card appearance="outlined" class="chart-card rise-in">
+    <mat-card-header>
+      <mat-card-title>Price history</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (chartOptions(); as options) {
+        <div echarts [options]="options" class="chart"></div>
+      } @else {
+        <p class="muted">No price history yet — scrape a listing to get the first point.</p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <div class="grid">
+    @for (listing of p.listings; track listing.id) {
+      <mat-card appearance="outlined" class="listing-card card-lift rise-in">
+        <mat-card-header>
+          <mat-card-title>
+            <span class="site-badge" [class.flipkart]="listing.site === 'flipkart'">{{
+              listing.site
+            }}</span>
+            <span class="price">{{ listing.latestPrice?.price_minor | inr }}</span>
+            @if (!listing.is_active) {
+              <span class="badge paused">Paused</span>
+            }
+          </mat-card-title>
+          <mat-card-subtitle>
+            @if (listing.latestPrice; as point) {
+              {{ point.in_stock ? 'In stock' : 'Out of stock' }}
+            } @else {
+              No price yet
+            }
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <dl class="facts">
+            <div>
+              <dt>Last scraped</dt>
+              <dd>{{ listing.last_scraped_at | timeAgo }}</dd>
+            </div>
+            @if (listing.external_id) {
+              <div>
+                <dt>Site ID</dt>
+                <dd>{{ listing.external_id }}</dd>
+              </div>
+            }
+            @if (listing.variant_note) {
+              <div>
+                <dt>Variant</dt>
+                <dd>{{ listing.variant_note }}</dd>
+              </div>
+            }
+            @if (listing.fail_count > 0) {
+              <div>
+                <dt>Failures</dt>
+                <dd>{{ listing.fail_count }}</dd>
+              </div>
+            }
+          </dl>
+
+          <div class="alerts-block">
+            <h3>Price alerts</h3>
+            @for (alert of alertsFor(listing.id); track alert.id) {
+              <div class="alert-row">
+                <span class="badge channel">{{ alert.channel }}</span>
+                <span class="price">{{ alert.target_price_minor | inr }}</span>
+                @if (targetReached(alert, listing)) {
+                  <span class="badge reached">Target reached</span>
+                }
+                @if (alert.last_triggered_at) {
+                  <span class="muted">triggered {{ alert.last_triggered_at | timeAgo }}</span>
+                } @else {
+                  <span class="muted">not triggered yet</span>
+                }
+                <button matButton (click)="removeAlert(alert.id)" [disabled]="busyAlertId() !== null">
+                  Remove
+                </button>
+              </div>
+            } @empty {
+              <p class="muted no-alerts">No alerts yet.</p>
+            }
+            <form class="alert-form" (submit)="addAlert(listing.id, $event)">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Target (₹)</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputmode="decimal"
+                  [value]="draftFor(listing.id).target"
+                  (input)="onTargetInput(listing.id, $event)"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Channel</mat-label>
+                <mat-select
+                  [value]="draftFor(listing.id).channel"
+                  (selectionChange)="onChannelChange(listing.id, $event)"
+                >
+                  <mat-option value="telegram">telegram</mat-option>
+                  <mat-option value="email">email</mat-option>
+                  <mat-option value="desktop">desktop</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button matButton="filled" type="submit" [disabled]="busyListingId() !== null">
+                Set target
+              </button>
+            </form>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button matButton (click)="scrape(listing.id)" [disabled]="busyListingId() !== null">
+            Scrape now
+          </button>
+          <button
+            matButton
+            (click)="toggleActive(listing.id, !listing.is_active)"
+            [disabled]="busyListingId() !== null"
+          >
+            {{ listing.is_active ? 'Pause' : 'Resume' }}
+          </button>
+          <a matButton [href]="listing.url" target="_blank" rel="noopener">Open on site</a>
+        </mat-card-actions>
+      </mat-card>
+    } @empty {
+      <p class="muted">No listings on this product yet.</p>
+    }
+  </div>
+} @else {
+  <div class="loading-row">
+    <mat-spinner diameter="36" />
+    <span>Loading product…</span>
+  </div>
+}

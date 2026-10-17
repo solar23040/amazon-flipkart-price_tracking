@@ -1,0 +1,66 @@
+<mat-toolbar class="app-bar">
+  <a class="brand" routerLink="/">
+    <span class="brand-mark" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 17l5-5 4 3 7-8" />
+        <path d="M15 7h4v4" />
+      </svg>
+    </span>
+    <span>Price History</span>
+  </a>
+
+  <nav class="nav desktop-nav" aria-label="Main">
+    @for (link of links; track link.path) {
+      <a
+        matButton
+        [routerLink]="link.path"
+        routerLinkActive="nav-active"
+        [routerLinkActiveOptions]="{ exact: link.exact }"
+        >{{ link.label }}</a
+      >
+    }
+  </nav>
+
+  <button
+    class="nav-toggle"
+    type="button"
+    aria-label="Open navigation menu"
+    [matMenuTriggerFor]="mobileNav"
+  >
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      aria-hidden="true"
+    >
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </svg>
+  </button>
+
+  <mat-menu #mobileNav="matMenu" xPosition="before">
+    @for (link of links; track link.path) {
+      <a
+        mat-menu-item
+        [routerLink]="link.path"
+        routerLinkActive="nav-active"
+        [routerLinkActiveOptions]="{ exact: link.exact }"
+        >{{ link.label }}</a
+      >
+    }
+  </mat-menu>
+</mat-toolbar>
+
+<main class="page">
+  <router-outlet />
+</main>

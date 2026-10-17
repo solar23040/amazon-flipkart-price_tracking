@@ -1,0 +1,84 @@
+<div class="pane">
+  <section class="page-head">
+    <div>
+      <h1>Add a product</h1>
+      <p class="subtitle muted">
+        Paste a product URL from Amazon.in or Flipkart — the first price is fetched immediately.
+      </p>
+    </div>
+  </section>
+
+  <mat-card appearance="outlined" class="form-card rise-in">
+    <form (submit)="submit($event)">
+      <mat-form-field appearance="outline" class="url-field">
+        <mat-label>Product URL</mat-label>
+        <input
+          matInput
+          type="url"
+          inputmode="url"
+          [value]="url()"
+          (input)="onUrlInput($event)"
+          placeholder="https://www.amazon.in/dp/…"
+          [disabled]="submitting()"
+        />
+      </mat-form-field>
+      <button matButton="filled" type="submit" [disabled]="submitting() || !url().trim()">
+        {{ submitting() ? 'Fetching…' : 'Track product' }}
+      </button>
+    </form>
+    <p class="hint muted">
+      Works with product pages on amazon.in and flipkart.com. Or
+      <a routerLink="/search">search by name</a> instead.
+    </p>
+
+    @if (submitting()) {
+      <div class="loading-row">
+        <mat-spinner diameter="26" />
+        <span>Scraping the product page — this can take a few seconds.</span>
+      </div>
+    }
+  </mat-card>
+
+  @if (error(); as err) {
+    <mat-card appearance="outlined" class="notice-card error rise-in">
+      <p class="error-text">{{ err.message }}</p>
+      @if (err.productId; as productId) {
+        <a matButton [routerLink]="['/products', productId]">Open the tracked product</a>
+      }
+    </mat-card>
+  }
+
+  @if (result(); as res) {
+    <mat-card appearance="outlined" class="notice-card success rise-in">
+      <h2>{{ res.product.name }}</h2>
+      @if (res.listing; as listing) {
+        <p class="result-line">
+          <span class="site-badge" [class.flipkart]="listing.site === 'flipkart'">{{
+            listing.site
+          }}</span>
+          @if (res.latestPrice; as point) {
+            <span class="price">{{ point.price_minor | inr }}</span>
+            <span class="stock" [class.out]="!point.in_stock">{{
+              point.in_stock ? 'in stock' : 'out of stock'
+            }}</span>
+          } @else {
+            <span class="stock out">no price yet</span>
+          }
+        </p>
+      }
+      @if (res.scrape && !res.scrape.ok) {
+        <p class="warn">
+          Tracked, but the first scrape failed ({{ res.scrape.errorKind ?? 'unknown' }}):
+          {{ res.scrape.error ?? 'no details' }}
+        </p>
+      }
+      <div class="actions">
+        <a matButton [routerLink]="['/products', res.product.id]">View details</a>
+        <a matButton [routerLink]="['/compare']" [queryParams]="{ productId: res.product.id }"
+          >Compare sites</a
+        >
+        <button matButton (click)="reset()">Add another</button>
+      </div>
+    </mat-card>
+  }
+</div>

@@ -1,0 +1,106 @@
+.pane {
+  max-width: 640px;
+  margin: 0 auto;
+
+  .notice-card {
+    max-width: none;
+    margin-top: 1rem;
+  }
+}
+
+.form-card {
+  padding: 1.75rem 1.75rem 1.25rem;
+  border-radius: var(--mat-sys-corner-large, 16px);
+
+  form {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .url-field {
+    flex: 1 1 320px;
+    transition: box-shadow 180ms ease;
+
+    &:focus-within {
+      border-radius: var(--mat-sys-corner-small, 8px);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 16%, transparent);
+    }
+  }
+
+  button {
+    margin-top: 0.5rem;
+  }
+
+  .hint {
+    margin: 0.4rem 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+}
+
+.result-line {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+
+  .price {
+    font-size: 1.15rem;
+  }
+
+  .stock {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant, #44474e);
+
+    &.out {
+      color: var(--mat-sys-error, #ba1a1a);
+    }
+  }
+}
+
+.warn {
+  color: light-dark(#b45f06, #ffb95c);
+  line-height: 1.55;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .form-card {
+    form {
+      .url-field {
+        flex-basis: 100%;
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+        margin-top: 0.25rem;
+        /* Keep the primary action reachable while the form is on screen. */
+        position: sticky;
+        bottom: calc(0.75rem + env(safe-area-inset-bottom));
+        z-index: 5;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .form-card {
+    padding: 1.25rem 1.1rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-card .url-field {
+    transition: none;
+  }
+}

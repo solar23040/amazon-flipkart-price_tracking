@@ -1,0 +1,41 @@
+# Fly.io deployment config. Docs: https://fly.io/docs/reference/configuration/
+# Before first deploy, change `app` to a globally unique name.
+
+app = "price-history-tracker"
+primary_region = "bom" # Mumbai - closest to the retailers we scrape
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8080"
+  DB_PATH = "/data/prices.db"
+  LOG_DIR = "/data/logs"
+  FRONTEND_DIST = "/app/frontend/dist/frontend"
+  SCHEDULER_ENABLED = "true"
+  # Every other knob from .env.example can be set here or with `fly secrets set`:
+  # SCRAPE_INTERVAL_MINUTES = "360"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # The in-process scheduler must keep running, so never stop machines on idle.
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "15s"
+    method = "GET"
+    path = "/api/health"
+
+[[mounts]]
+  source = "data"       # create with: fly volumes create data --size 1 --region bom
+  destination = "/data" # holds prices.db and logs/
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb" # free allowance; bump to "512mb" (~$2/mo) if scrapes hit OOM

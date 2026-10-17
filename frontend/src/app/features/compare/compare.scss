@@ -1,0 +1,140 @@
+.product-select {
+  min-width: 280px;
+  max-width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.listing-card {
+  display: flex;
+  flex-direction: column;
+
+  mat-card-header {
+    padding-bottom: 0.35rem;
+  }
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+  }
+
+  .price {
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+  }
+
+  mat-card-subtitle {
+    font-size: 0.78rem;
+  }
+
+  mat-card-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    min-height: 1.5rem;
+    flex: 1;
+  }
+
+  &.winner {
+    border-color: light-dark(#137333, #7ddc9a);
+    box-shadow:
+      0 0 0 1px light-dark(#137333, #7ddc9a),
+      var(--mat-sys-level1);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, light-dark(#137333, #7ddc9a) 7%, var(--mat-sys-surface)),
+      var(--mat-sys-surface) 55%
+    );
+  }
+}
+
+.hint {
+  margin-top: 0.75rem;
+}
+
+.add-card {
+  max-width: 640px;
+  margin-top: 1.5rem;
+  padding: 1.5rem 1.5rem 1.1rem;
+  border-radius: var(--mat-sys-corner-large, 16px);
+
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+
+  p.muted {
+    margin-top: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  form {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .url-field {
+    flex: 1 1 300px;
+    transition: box-shadow 180ms ease;
+
+    &:focus-within {
+      border-radius: var(--mat-sys-corner-small, 8px);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 16%, transparent);
+    }
+  }
+
+  button {
+    margin-top: 0.5rem;
+  }
+
+  .ok-text,
+  .error-text {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .product-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .add-card form {
+    .url-field {
+      flex-basis: 100%;
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-card .url-field {
+    transition: none;
+  }
+}

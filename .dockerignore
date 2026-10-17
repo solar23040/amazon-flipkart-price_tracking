@@ -1,0 +1,14 @@
+# Keep the Docker/Fly build context small - build output and runtime state are recreated.
+**/node_modules
+**/dist
+**/.angular
+.cache
+.git
+.gitignore
+.env
+data
+logs
+backups
+Dockerfile
+fly.toml
+*.md

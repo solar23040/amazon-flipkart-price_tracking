@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+
+# Package manager caches (kept on the HDD via .npmrc)
+.cache/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Test output
+coverage/
+
+# Environment files (never commit real config)
+.env
+.env.*
+!.env.example
+
+# TLS certificates / keys (never commit)
+*.pem
+*.key
+
+# Runtime data (database lives on the HDD, not in git)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.sqlite
+data/*.sqlite3
+data/snapshots/*
+!data/snapshots/.gitkeep
+
+# Backups and logs
+backups/*
+!backups/.gitkeep
+logs/*
+!logs/.gitkeep
+
+# Editor / OS noise
+.vscode/
+.idea/
+*.swp
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp files
+*.bak
+*.tmp

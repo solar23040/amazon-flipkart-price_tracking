@@ -1,0 +1,84 @@
+<section class="page-head">
+  <h1>Tracked products</h1>
+  <div class="actions">
+    <button matButton (click)="load()">Refresh</button>
+    <a matButton="filled" routerLink="/add">Add product</a>
+  </div>
+</section>
+
+@if (error(); as message) {
+  <mat-card appearance="outlined" class="notice-card error rise-in">
+    <p class="error-text">{{ message }}</p>
+    <button matButton (click)="load()">Retry</button>
+  </mat-card>
+}
+
+@if (products(); as list) {
+  @if (list.length > 0) {
+    <div class="grid">
+      @for (product of list; track product.id) {
+        <mat-card appearance="outlined" class="product-card card-lift rise-in">
+          <mat-card-header>
+            <mat-card-title>{{ product.name }}</mat-card-title>
+            <mat-card-subtitle>Added {{ product.created_at | timeAgo }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            @for (listing of product.listings; track listing.id) {
+              <div class="listing-row">
+                <span class="site-badge" [class.flipkart]="listing.site === 'flipkart'">{{
+                  listing.site
+                }}</span>
+                <span class="price">{{ listing.latestPrice?.price_minor | inr }}</span>
+                @if (listing.latestPrice; as point) {
+                  <span class="stock" [class.out]="!point.in_stock">{{
+                    point.in_stock ? 'in stock' : 'out of stock'
+                  }}</span>
+                } @else {
+                  <span class="stock out">no price yet</span>
+                }
+                @if (!listing.is_active) {
+                  <span class="badge paused">Paused</span>
+                }
+              </div>
+            } @empty {
+              <p class="muted">No listings on this product yet.</p>
+            }
+          </mat-card-content>
+          <mat-card-actions>
+            <a matButton [routerLink]="['/products', product.id]">Details</a>
+            @if (product.listings.length > 0) {
+              <a matButton [routerLink]="['/compare']" [queryParams]="{ productId: product.id }"
+                >Compare</a
+              >
+            }
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  } @else if (!error()) {
+    <mat-card appearance="outlined" class="notice-card empty rise-in">
+      <svg
+        class="empty-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M3 17l5-5 4 3 7-8" />
+        <path d="M15 7h4v4" />
+        <path d="M3 21h18" />
+      </svg>
+      <h2>No products yet</h2>
+      <p class="muted">Paste an Amazon.in or Flipkart product URL to start tracking its price.</p>
+      <a matButton="filled" routerLink="/add">Add your first product</a>
+    </mat-card>
+  }
+} @else {
+  <div class="loading-row">
+    <mat-spinner diameter="36" />
+    <span>Loading products…</span>
+  </div>
+}

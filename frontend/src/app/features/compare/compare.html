@@ -1,0 +1,130 @@
+<section class="page-head">
+  <div>
+    <h1>Compare sites</h1>
+    <p class="subtitle muted">Pick a product to see its listings side by side.</p>
+  </div>
+</section>
+
+@if (error(); as message) {
+  <mat-card appearance="outlined" class="notice-card error rise-in">
+    <p class="error-text">{{ message }}</p>
+    <button matButton (click)="load()">Retry</button>
+  </mat-card>
+}
+
+@if (products(); as list) {
+  @if (list.length === 0) {
+    <mat-card appearance="outlined" class="notice-card rise-in">
+      <h2>Nothing to compare yet</h2>
+      <p>Add a product first, then add the same product's URL from a second site.</p>
+      <a matButton="filled" routerLink="/add">Add a product</a>
+    </mat-card>
+  } @else {
+    <mat-form-field appearance="outline" class="product-select">
+      <mat-label>Product</mat-label>
+      <mat-select [value]="selectedId()" (selectionChange)="select($event)">
+        @for (product of list; track product.id) {
+          <mat-option [value]="product.id">{{ product.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (selected(); as product) {
+      @if (product.listings.length > 0) {
+        <div class="grid">
+          @for (listing of product.listings; track listing.id) {
+            <mat-card
+              appearance="outlined"
+              class="listing-card card-lift rise-in"
+              [class.winner]="cheapestListingId() === listing.id"
+            >
+              <mat-card-header>
+                <mat-card-title>
+                  <span class="site-badge" [class.flipkart]="listing.site === 'flipkart'">{{
+                    listing.site
+                  }}</span>
+                  <span class="price">{{ listing.latestPrice?.price_minor | inr }}</span>
+                </mat-card-title>
+                <mat-card-subtitle>
+                  @if (listing.latestPrice; as point) {
+                    {{ point.in_stock ? 'In stock' : 'Out of stock' }} · scraped
+                    {{ point.scraped_at | timeAgo }}
+                  } @else {
+                    No price yet
+                  }
+                </mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                @if (cheapestListingId() === listing.id) {
+                  <span class="badge cheapest">Lowest price</span>
+                }
+                @if (priceDiffs().get(listing.id); as diff) {
+                  <span class="badge diff">+{{ diff }}% vs lowest</span>
+                }
+                @if (!listing.is_active) {
+                  <span class="badge paused">Paused</span>
+                }
+                @if (listing.variant_note) {
+                  <p class="muted">{{ listing.variant_note }}</p>
+                }
+              </mat-card-content>
+              <mat-card-actions>
+                <a matButton [routerLink]="['/products', product.id]">History</a>
+                <a matButton [href]="listing.url" target="_blank" rel="noopener">Open on site</a>
+              </mat-card-actions>
+            </mat-card>
+          }
+        </div>
+
+        @if (product.listings.length < 2) {
+          <p class="muted hint">
+            Only one listing so far — add the same product from another site below to compare.
+          </p>
+        }
+      } @else {
+        <p class="muted">This product has no listings yet.</p>
+      }
+
+      <mat-card appearance="outlined" class="add-card rise-in">
+        <h2>Add another site</h2>
+        <p class="muted">Paste the same product's URL from Amazon.in or Flipkart.</p>
+        <form (submit)="addListing($event)">
+          <mat-form-field appearance="outline" class="url-field">
+            <mat-label>Product URL</mat-label>
+            <input
+              matInput
+              type="url"
+              inputmode="url"
+              [value]="addUrl()"
+              (input)="onAddUrlInput($event)"
+              placeholder="https://www.flipkart.com/…"
+              [disabled]="adding()"
+            />
+          </mat-form-field>
+          <button matButton="filled" type="submit" [disabled]="adding() || !addUrl().trim()">
+            {{ adding() ? 'Fetching…' : 'Add listing' }}
+          </button>
+        </form>
+        @if (adding()) {
+          <div class="loading-row">
+            <mat-spinner diameter="24" />
+            <span>Scraping the product page…</span>
+          </div>
+        }
+        @if (addError(); as message) {
+          <p class="error-text">{{ message }}</p>
+        }
+        @if (addNotice(); as message) {
+          <p class="ok-text">{{ message }}</p>
+        }
+      </mat-card>
+    } @else {
+      <p class="muted">Select a product above to see its listings.</p>
+    }
+  }
+} @else {
+  <div class="loading-row">
+    <mat-spinner diameter="36" />
+    <span>Loading products…</span>
+  </div>
+}

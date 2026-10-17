@@ -1,0 +1,127 @@
+<div class="pane">
+  <section class="page-head">
+    <div>
+      <h1>Search across sites</h1>
+      <p class="subtitle muted">
+        Search Amazon.in and Flipkart at the same time, then track any result with one tap.
+      </p>
+    </div>
+  </section>
+
+  <mat-card appearance="outlined" class="search-card rise-in">
+    <mat-form-field appearance="outline" class="query-field">
+      <mat-label>Search products</mat-label>
+      <input
+        matInput
+        type="search"
+        inputmode="search"
+        [value]="query()"
+        (input)="onInput($event)"
+        placeholder="e.g. boAt Rockerz 255"
+      />
+    </mat-form-field>
+
+    <div class="chips" role="group" aria-label="Filter results by site">
+      @for (option of filterOptions; track option.value) {
+        <button
+          matButton
+          type="button"
+          class="chip"
+          [class.active]="filter() === option.value"
+          [attr.aria-pressed]="filter() === option.value"
+          (click)="filter.set(option.value)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+    <p class="hint muted">
+      Results come straight from the sites' search pages; some rows may not show a price.
+    </p>
+  </mat-card>
+
+  @if (notice(); as message) {
+    <mat-card appearance="outlined" class="notice-card error rise-in">
+      <p class="error-text">{{ message }}</p>
+    </mat-card>
+  }
+
+  @if (error(); as message) {
+    <mat-card appearance="outlined" class="notice-card error rise-in">
+      <p class="error-text">{{ message }}</p>
+      <button matButton type="button" (click)="retry()">Retry</button>
+    </mat-card>
+  }
+
+  @if (loading()) {
+    <div class="loading-row">
+      <mat-spinner diameter="32" />
+      <span>Searching Amazon.in and Flipkart…</span>
+    </div>
+  } @else if (searched() && !error()) {
+    @if (results().length === 0) {
+      <mat-card appearance="outlined" class="notice-card empty rise-in">
+        <h2>No results for “{{ query().trim() }}”</h2>
+        <p class="muted">
+          A site may be rate-limiting searches right now — try again in a minute or tweak the
+          wording.
+        </p>
+      </mat-card>
+    }
+
+    @for (group of groups(); track group.site) {
+      <section class="site-group rise-in">
+        <h2 class="group-head">
+          <span class="site-badge" [class.flipkart]="group.site === 'flipkart'">{{
+            group.label
+          }}</span>
+          @if (group.status?.ok) {
+            <span class="muted count"
+              >{{ group.candidates.length }} result{{
+                group.candidates.length === 1 ? '' : 's'
+              }}</span
+            >
+          }
+        </h2>
+
+        @if (group.status && !group.status.ok) {
+          <p class="muted group-note">
+            Couldn't load {{ group.label }} results (blocked or unreachable). The other site still
+            works, and the backend caches results for a few minutes — try again shortly.
+          </p>
+        } @else if (group.candidates.length === 0) {
+          <p class="muted group-note">No {{ group.label }} results for this search.</p>
+        } @else {
+          <div class="result-list">
+            @for (candidate of group.candidates; track candidate.url) {
+              <mat-card appearance="outlined" class="result-card">
+                <div class="result-row">
+                  <a
+                    class="result-title"
+                    [href]="candidate.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >{{ candidate.title }}</a
+                  >
+                  <span class="result-price price">{{ candidate.priceMinor | inr }}</span>
+                  @if (candidate.inStock === false) {
+                    <span class="stock out">out of stock</span>
+                  }
+                  <button
+                    matButton="filled"
+                    type="button"
+                    class="track-button"
+                    [disabled]="trackingUrl() !== null"
+                    (click)="track(candidate)"
+                  >
+                    {{ trackingUrl() === candidate.url ? 'Tracking…' : 'Track this' }}
+                  </button>
+                </div>
+              </mat-card>
+            }
+          </div>
+        }
+      </section>
+    }
+  }
+</div>

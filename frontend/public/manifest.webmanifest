@@ -1,0 +1,37 @@
+{
+  "name": "Price History",
+  "short_name": "PriceHistory",
+  "description": "Track product prices on Amazon.in and Flipkart, compare sites, and get alerted on price drops.",
+  "id": "/",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "theme_color": "#005cbb",
+  "background_color": "#faf9fd",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
